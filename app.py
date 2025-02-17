@@ -499,6 +499,8 @@ def home():
 def signup():
 
     if request.method == 'GET':
+        if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
         return render_template('user/signup.html')
     
     if request.method == 'POST':
@@ -508,6 +510,8 @@ def signup():
         # add_user(username, password)
         # return redirect('/login')
         # above lines commented to handle existing username
+        if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
 
         if add_user(username, password):
             # return redirect('/login')
@@ -540,11 +544,16 @@ def signup():
 def login():
 
     if request.method == 'GET':
+        if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
         return render_template('user/login.html')
 
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
+        if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
         
         user = validate_login(username, password)
         if user:
