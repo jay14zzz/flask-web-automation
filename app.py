@@ -494,37 +494,6 @@ def home():
         return redirect('/login')
 
 
-
-
-
-# Route for login (GET and POST)
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-
-    if request.method == 'GET':
-        return render_template('user/login.html')
-
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        user = validate_login(username, password)
-        if user:
-            session['username'] = username
-            return redirect('/home')
-        else:
-            # return 'Invalid username or password'
-            # instead of returning a statement, alert msg is displayed for invalid username or password
-            alert_message = "Invalid username or password"
-            redirect_url = url_for('login')
-            redirect_url = request.referrer  # This will get the previous page URL
-            return f"""
-                <script type="text/javascript">
-                    alert("{alert_message}");
-                    window.location.href = "{redirect_url}";
-                </script>
-            """
-
 # Route for signup (GET and POST)
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -563,6 +532,36 @@ def signup():
                 </script>
             """
 
+
+
+
+# Route for login (GET and POST)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    if request.method == 'GET':
+        return render_template('user/login.html')
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = validate_login(username, password)
+        if user:
+            session['username'] = username
+            return redirect('/home')
+        else:
+            # return 'Invalid username or password'
+            # instead of returning a statement, alert msg is displayed for invalid username or password
+            alert_message = "Invalid username or password"
+            redirect_url = url_for('login')
+            redirect_url = request.referrer  # This will get the previous page URL
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
 
 
 # Route for logout
