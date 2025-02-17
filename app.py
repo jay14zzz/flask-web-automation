@@ -30,7 +30,6 @@ app.config.from_pyfile('config.py')
 
 app.secret_key = app.config['SECRET_KEY']
 
-
 # Configuration to remove trailing slashes
 app.url_map.strict_slashes = False
 
@@ -494,64 +493,75 @@ def home():
     else:
         return redirect('/login')
 
-# Route for login page (GET method)
-@app.route('/login', methods=['GET'])
-def show_login_form():
-    return render_template('user/login.html')
-
-# Route for signup page (GET method)
-@app.route('/signup', methods=['GET'])
-def show_signup_form():
-    return render_template('user/signup.html')
 
 
-# Route for login (POST method)
-@app.route('/login', methods=['POST'])
+
+
+# Route for login (GET and POST)
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
-    
-    user = validate_login(username, password)
-    if user:
-        session['username'] = username
-        return redirect('/home')
-    else:
-        # return 'Invalid username or password'
-        # instead of returning a statement, alert msg is displayed for invalid username or password
-        alert_message = "Invalid username or password"
-        redirect_url = url_for('login')
-        redirect_url = request.referrer  # This will get the previous page URL
-        return f"""
-            <script type="text/javascript">
-                alert("{alert_message}");
-                window.location.href = "{redirect_url}";
-            </script>
-        """
 
-# Route for signup (POST method)
-@app.route('/signup', methods=['POST'])
+    if request.method == 'GET':
+        return render_template('user/login.html')
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = validate_login(username, password)
+        if user:
+            session['username'] = username
+            return redirect('/home')
+        else:
+            # return 'Invalid username or password'
+            # instead of returning a statement, alert msg is displayed for invalid username or password
+            alert_message = "Invalid username or password"
+            redirect_url = url_for('login')
+            redirect_url = request.referrer  # This will get the previous page URL
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
+
+# Route for signup (GET and POST)
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    username = request.form['username']
-    password = request.form['password']
-    
-    # add_user(username, password)
-    # return redirect('/login')
-    # above lines commented to handle existing username
 
-    if add_user(username, password):
-        return redirect('/login')
-    else:
-        # return "Username already exists. Please choose a different username."
-        # instead of returning a statement, alert msg is displayed for Username already exists
-        alert_message = "Username already exists. Please choose a different username"
-        redirect_url = url_for('signup')
-        redirect_url = request.referrer  # This will get the previous page URL
-        return f"""
-            <script type="text/javascript">
-                alert("{alert_message}");
-                window.location.href = "{redirect_url}";
-            </script>
-        """
+    if request.method == 'GET':
+        return render_template('user/signup.html')
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # add_user(username, password)
+        # return redirect('/login')
+        # above lines commented to handle existing username
+
+        if add_user(username, password):
+            # return redirect('/login')
+            alert_message = "User created. Login to continue..."
+            redirect_url = url_for('login')
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
+        else:
+            # return "Username already exists. Please choose a different username."
+            # instead of returning a statement, alert msg is displayed for Username already exists
+            alert_message = "Username already exists. Please choose a different username"
+            redirect_url = url_for('signup')
+            redirect_url = request.referrer  # This will get the previous page URL
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
 
 
 
