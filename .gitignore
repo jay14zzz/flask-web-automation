@@ -1,5 +1,20 @@
 # ignore virtual environment folder
 venv/
+.venv/
+
+# Ignore common virtual environment directories
+venv/
+.venv/
+env/
+virtualenv/
+envs/
+
+# To catch environments in any subdirectory
+**/env/
+**/.venv/
+**/venv/
+**/virtualenv/
+
 
 # Ignore environment files
 .env
