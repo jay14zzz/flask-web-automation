@@ -19,8 +19,17 @@ from selenium_scripts.dropdown1_1 import dropdown1_1_check
 
 # from loginCheck import test_login_combinations
 
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+
+# Load configuration from config.py
+app.config.from_pyfile('config.py')
+# Access configuration values
+# print(app.config['SECRET_KEY'])
+
+app.secret_key = app.config['SECRET_KEY']
+
 
 # Configuration to remove trailing slashes
 app.url_map.strict_slashes = False
