@@ -511,6 +511,7 @@ def login():
         # instead of returning a statement, alert msg is displayed for invalid username or password
         alert_message = "Invalid username or password"
         redirect_url = url_for('login')
+        redirect_url = request.referrer  # This will get the previous page URL
         return f"""
             <script type="text/javascript">
                 alert("{alert_message}");
@@ -535,6 +536,7 @@ def signup():
         # instead of returning a statement, alert msg is displayed for Username already exists
         alert_message = "Username already exists. Please choose a different username"
         redirect_url = url_for('signup')
+        redirect_url = request.referrer  # This will get the previous page URL
         return f"""
             <script type="text/javascript">
                 alert("{alert_message}");
@@ -674,6 +676,60 @@ def admin_dashboard():
     else:
         return redirect('/admin/login')
     
+# Route for user signup (POST method) - from admin dashboard
+@app.route('/admin/add_user', methods=['POST'])
+def admin_add_user():
+    if 'admin_username' in session:
+        username = request.form['username']
+        password = request.form['password']
+
+        if add_user(username, password):
+            alert_message = "User created successfully."
+            redirect_url = request.referrer
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
+        else:
+            # return "Username already exists. Please choose a different username."
+            # instead of returning a statement, alert msg is displayed for Username already exists
+            alert_message = "Username already exists. Please choose a different username"
+            # Get the referring (previous) page URL
+            redirect_url = request.referrer  # This will get the previous page URL
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
+
+# Route for admin signup (POST method) - from admin dashboard
+@app.route('/admin/add_admin', methods=['POST'])
+def admin_add_admin():
+    if 'admin_username' in session:
+        username = request.form['username']
+        password = request.form['password']
+
+        if add_admin(username, password):
+            alert_message = "Admin user created successfully."
+            redirect_url = request.referrer
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """
+        else:
+            alert_message = "Admin username already exists. Please choose a different username"
+            redirect_url = request.referrer  # This will get the previous page URL
+            return f"""
+                <script type="text/javascript">
+                    alert("{alert_message}");
+                    window.location.href = "{redirect_url}";
+                </script>
+            """    
 
 @app.errorhandler(404)
 def page_not_found(error):
