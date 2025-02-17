@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+
+    <style>
+        /* Style readonly fields to look like disabled */
+        input[readonly] {
+            background-color: #e9ecef; /* Same as disabled background */
+            color: #6c757d; /* Same as disabled text color */
+            cursor: not-allowed; /* Same as disabled cursor */
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h4>Select Option</h4>
+        <select id="option-select" onchange="showForm(this.value); fetchDetails('')">
+            <option value="file_upload">File Upload</option>
+            <option value="login_combination">Login Combination</option>
+            <option value="age_combination">Age Combination</option>
+        </select>
+
+        <div id="file-upload-form" style="display: block;">
+            <h2>File Upload Form</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="url">URL:</label>
+                    <input type="url" id="url" name="url" placeholder="URL" required><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="identifier">Identifier:</label>
+                    <input type="text" id="identifier" name="identifier" placeholder="Identifier" required><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="file">File:</label>
+                    <input type="file" id="file" name="file" accept=".xlsx, .xls, .csv"><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="remark">File Upload Remark:</label>
+                    <input type="text" id="remark" name="remark" placeholder="Remark" required><br><br>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+            <br><br>
+        </div>
+
+        <div id="login-combination-form" style="display: none;">
+            <h2>Login Combination Form</h2>
+            <!-- Add your login combination form fields here -->
+            <form action="/upload_login" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="unique-id">Unique ID:</label>
+                    <select id="unique-id" name="unique-id" onchange="fetchDetails(this.value)" required>
+                        <option value="select">Select an option</option>
+                        <!-- Dropdown options will be populated dynamically using JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="login-url">URL:</label>
+                    <input type="text" id="login-url" name="login-url" placeholder="URL" readonly><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="login-identifier">Identifier:</label>
+                    <input type="text" id="login-identifier" name="login-identifier" placeholder="Identifier" readonly><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="login-file_name">File Name:</label>
+                    <input type="text" id="login-file-name" name="login-file-name" placeholder="File Name" readonly><br><br>
+                </div>
+                <!-- <div class="form-group">
+                    <label for="login-file_path">File Path:</label>
+                    <input type="text" id="login-file-path" name="login-file-path" placeholder="File Path" readonly><br><br>
+                </div> -->
+                <div class="form-group">
+                    <label for="file-upload-remark">File Upload Remark:</label>
+                    <input type="text" id="file-upload-remark" name="file-upload-remark" placeholder="Remark entered during file upload" readonly><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="login1">Login 1:</label>
+                    <select id="login1" name="login1">
+                        <option value="select">Select an option</option>
+                        <!-- Dropdown options will be populated dynamically using JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="login2">Login 2:</label>
+                    <select id="login2" name="login2">
+                        <option value="select">Select an option</option>
+                        <!-- Dropdown options will be populated dynamically using JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password1">Password 1:</label>
+                    <select id="password1" name="password1">
+                        <option value="select">Select an option</option>
+                        <!-- Dropdown options will be populated dynamically using JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password2">Password 2:</label>
+                    <select id="password2" name="password2">
+                        <option value="select">Select an option</option>
+                        <!-- Dropdown options will be populated dynamically using JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="login-comb-remark">Login Combination Remark:</label>
+                    <input type="text" id="login-comb-remark" name="login-comb-remark" placeholder="Enter login combination remarks" required><br><br>
+                </div>
+
+                <input type="submit" value="Submit">
+
+            </form>
+            <br><br>
+        </div>
+
+        <div id="age-combination-form" style="display: none;">
+            <h2>Age Combination Form</h2>
+            <!-- Add your age combination form fields here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to show the selected form based on the option
+    function showForm(option) {
+        var fileUploadForm = document.getElementById("file-upload-form");
+        var loginCombinationForm = document.getElementById("login-combination-form");
+        var ageCombinationForm = document.getElementById("age-combination-form");
+
+        if (option === "file_upload") {
+            fileUploadForm.style.display = "block";
+            loginCombinationForm.style.display = "none";
+            ageCombinationForm.style.display = "none";
+        } else if (option === "login_combination") {
+            fileUploadForm.style.display = "none";
+            loginCombinationForm.style.display = "block";
+            ageCombinationForm.style.display = "none";
+
+            // Fetch unique IDs dynamically and populate the dropdown
+            fetchUniqueIDs();
+
+            /*
+            // Reset the login form fields
+            document.getElementById("login-url").value = "";
+            document.getElementById("login-identifier").value = "";
+            document.getElementById("login-file-name").value = "";
+            document.getElementById("login-file-path").value = "";
+            */
+            
+        } else if (option === "age_combination") {
+            fileUploadForm.style.display = "none";
+            loginCombinationForm.style.display = "none";
+            ageCombinationForm.style.display = "block";
+        }
+    }
+
+    // Function to fetch unique IDs and populate the dropdown
+    function fetchUniqueIDs() {
+        // Make an AJAX request to fetch unique IDs
+        fetch('/fetch_unique_ids')
+            .then(response => response.json())
+            .then(data => {
+                // Populate the dropdown with fetched unique IDs
+                var uniqueIdDropdown = document.getElementById("unique-id");
+                uniqueIdDropdown.innerHTML = "";
+
+                // Add the default option
+                var defaultOption = document.createElement("option");
+                defaultOption.text = "Select an option";
+                defaultOption.value = "";
+                uniqueIdDropdown.add(defaultOption);
+
+                // Add options from the fetched data
+                data.forEach(id => {
+                    var option = document.createElement("option");
+                    option.text = id;
+                    option.value = id;
+                    uniqueIdDropdown.add(option);
+                });
+                /*  calling the function manually is commented since a default option is added inside the fetchUniqueIds function
+                // method1
+                // Manually trigger fetchDetails() if there's only one option
+                if (data.length === 1) {
+                    fetchDetails(data[0]); // Assuming data[0] is the selected unique ID
+                }
+                
+                
+                // method2
+                // Check if there's only one option and it's automatically selected
+                if (uniqueIdDropdown.length === 1 && uniqueIdDropdown.selectedIndex === 0) {
+                    // Manually trigger the fetchDetails() function
+                    fetchDetails(uniqueIdDropdown.value);
+                }
+                
+
+                // method3
+                // Assume 1st option is selected and manually call the function
+                fetchDetails(data[0]) // Assuming data[0] is the selected unique ID
+                */
+
+            });
+            
+
+            
+    }
+
+    function fetchDetails(uniqueId) {
+        if (uniqueId === "" || typeof uniqueId === "undefined" ) {
+            // Reset the form fields if no option is selected
+            document.getElementById("login-url").value = "";
+            document.getElementById("login-identifier").value = "";
+            document.getElementById("login-file-name").value = "";
+            // document.getElementById("login-file-path").value = "";
+            document.getElementById("file-upload-remark").value = "";
+            // Reset the login combination dropdown fields
+            var dropdownIds = ["login1", "login2", "password1", "password2"];
+            dropdownIds.forEach(function(dropdownId) {
+                var dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = "";
+
+                // Add default option
+                var defaultOption = document.createElement("option");
+                defaultOption.text = "Select an option";
+                defaultOption.value = "";
+                dropdown.add(defaultOption);
+            });
+
+            return; // Exit the function
+        }
+
+        // Make an AJAX request to fetch details based on unique ID
+        fetch('/fetch_details?unique_id=' + uniqueId)
+            .then(response => response.json())
+            .then(data => {
+                // Populate the form fields with fetched details
+                document.getElementById("login-url").value = data.url;
+                document.getElementById("login-identifier").value = data.identifier;
+                document.getElementById("login-file-name").value = data.file_name;
+                // document.getElementById("login-file-path").value = data.file_path;
+                document.getElementById("file-upload-remark").value = data.file_upload_remark;
+
+                // Show the details form
+                // document.getElementById("details-form").style.display = "block";
+            });
+
+        // Make an AJAX request to fetch column name/heading (from excel/csv file) details based on unique ID
+        fetch('/fetch_column_names?unique_id=' + uniqueId) //  this endpoint fetches the column names for login1, login2, password1, password2 dropdown values
+            .then(response => response.json())
+            .then(data => {
+                // Populate the login, password dropdowns
+                populateDropdown("login1", data.columns);
+                populateDropdown("login2", data.columns);
+                populateDropdown("password1", data.columns);
+                populateDropdown("password2", data.columns);
+        });
+    }
+
+    // function to populate dropdown after getting json response from server side 
+    function populateDropdown(dropdownId, values) {
+        var dropdown = document.getElementById(dropdownId);
+        dropdown.innerHTML = "";
+
+        // Add default option
+        var defaultOption = document.createElement("option");
+        defaultOption.text = "Select an option";
+        defaultOption.value = "";
+        dropdown.add(defaultOption);
+
+        // Add options from the fetched data
+        values.forEach(value => {
+            var option = document.createElement("option");
+            option.text = value;
+            option.value = value;
+            dropdown.add(option);
+        });
+    }
+
+    // Function to validate form before submission (login-combination-form)
+    function validateForm() {
+        // Get selected values
+        var login1 = document.getElementById("login1").value;
+        var login2 = document.getElementById("login2").value;
+        var password1 = document.getElementById("password1").value;
+        var password2 = document.getElementById("password2").value;
+
+        // Check for duplicate values
+        if (login1 === login2 || login1 === password1 || login1 === password2 ||
+            login2 === password1) {
+            alert("Please select unique values for login and password fields.");
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+
+</script>
+
+</body>
+</html>

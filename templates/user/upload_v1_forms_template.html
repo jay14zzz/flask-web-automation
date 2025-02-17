@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h4>Select Option</h4>
+        <select id="option-select" onchange="showForm(this.value)">
+            <option value="file_upload">File Upload</option>
+            <option value="login_combination">Login Combination</option>
+            <option value="age_combination">Age Combination</option>
+        </select>
+
+        <div id="file-upload-form" style="display: block;">
+            <h2>File Upload Form</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="url">URL:</label>
+                    <input type="text" id="url" name="url" placeholder="URL" required><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="identifier">Identifier:</label>
+                    <input type="text" id="identifier" name="identifier" placeholder="Identifier" required><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="file">File:</label>
+                    <input type="file" id="file" name="file" accept=".xlsx, .xls, .csv"><br><br>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+        <div id="login-combination-form" style="display: none;">
+            <h2>Login Combination Form</h2>
+            <!-- Add your login combination form fields here -->
+        </div>
+
+        <div id="age-combination-form" style="display: none;">
+            <h2>Age Combination Form</h2>
+            <!-- Add your age combination form fields here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to show the selected form based on the option
+    function showForm(option) {
+        var fileUploadForm = document.getElementById("file-upload-form");
+        var loginCombinationForm = document.getElementById("login-combination-form");
+        var ageCombinationForm = document.getElementById("age-combination-form");
+
+        if (option === "file_upload") {
+            fileUploadForm.style.display = "block";
+            loginCombinationForm.style.display = "none";
+            ageCombinationForm.style.display = "none";
+        } else if (option === "login_combination") {
+            fileUploadForm.style.display = "none";
+            loginCombinationForm.style.display = "block";
+            ageCombinationForm.style.display = "none";
+        } else if (option === "age_combination") {
+            fileUploadForm.style.display = "none";
+            loginCombinationForm.style.display = "none";
+            ageCombinationForm.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>

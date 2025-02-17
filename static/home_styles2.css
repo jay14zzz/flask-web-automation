@@ -1,0 +1,155 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome,
+.logout {
+    text-align: center;
+}
+
+/* Container Styles */
+.container {
+    position: absolute;
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    overflow: auto;
+    top: 100px; /* Adjust top position according to the height of the header */
+    left: 140px; /* Adjust left position according to the width of the sidebar */
+    right: 0;
+    bottom: 0;
+}
+
+.sidebar {
+    width: 180px; /* Adjust the width as needed */
+    background-color: #f2f2f2;
+    padding: 20px;
+    position: fixed;
+    top: 100px; /* Adjust the top position */
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Navigation Styles */
+.options {
+    list-style-type: none;
+    padding: 0;
+}
+
+.options li {
+    margin-bottom: 10px;
+}
+
+.options li a {
+    display: block;
+    padding: 10px;
+    background-color: #fff;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.options li a:hover,
+.options li a.active {
+    background-color: #ddd;
+}
+
+.instructions {
+    text-align: center;
+}
+
+/* Logout Button Styles */
+
+/* old version css for logout button
+.logout .logout-btn {
+    color: #fff;
+    background-color: #333; 
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+}
+
+.logout .logout-btn:hover {
+    background-color: rgb(14, 14, 14); 
+}
+end of old version*/
+button {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: inline-block;
+    width: 100px; /* Adjust as needed */
+}
+
+input[type="text"],
+input[type="file"] {
+    width: calc(100% - 110px); /* Adjust as needed */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+    .container {
+        left: 0; /* Reset left position */
+        top: 150px; /* Adjust top position according to the height of the header */
+    }
+
+    .sidebar {
+        position: relative; /* Reset position */
+        width: 100%; /* Adjust width to fill available space */
+        left: 0; /* Reset left position */
+        top: 0; /* Reset top position */
+        bottom: auto; /* Reset bottom position */
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}

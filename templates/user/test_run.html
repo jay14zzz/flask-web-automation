@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Run</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>Test run</h2>
+        <!-- <p>To check whether the script is working as intended.</p> -->
+        <p>Selenium Driver Test Run</p>
+        <button id="selenium-check-button">Selenium WebDriver Check</button>
+        <div id="selenium-check-result"></div>
+        <br><br>
+    </div>
+</div>
+
+<script>
+    document.getElementById('selenium-check-button').addEventListener('click', function() {
+        const resultDiv = document.getElementById('selenium-check-result')
+        resultDiv.innerHTML = '<p style="color: blue;">Waiting for response from server...</p>';
+        fetch('/run_selenium')
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('selenium-check-result');
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('selenium-check-result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+    });
+</script>
+
+</body>
+</html>

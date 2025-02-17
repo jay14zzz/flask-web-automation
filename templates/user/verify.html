@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+<script>
+    function toggleTable() {
+        var selectedTable = document.getElementById("table-select").value;
+        var uploadsTable = document.getElementById("uploads-table");
+        var loginCombTable = document.getElementById("login-comb-table");
+        var ageCombTable = document.getElementById("age-comb-table");
+
+        // if (selectedTable === "user_uploads") {
+        //     uploadsTable.style.display = "block";
+        //     loginCombTable.style.display = "none";
+        //     ageCombTable.style.display = "none";
+        // } else if (selectedTable === "login_comb") {
+        //     uploadsTable.style.display = "none";
+        //     loginCombTable.style.display = "block";
+        //     ageCombTable.style.display = "none";
+        // } else if (selectedTable === "age_comb") {
+        //     uploadsTable.style.display = "none";
+        //     loginCombTable.style.display = "none";
+        //     ageCombTable.style.display = "block";
+        // }
+
+        uploadsTable.style.display = "none";
+        loginCombTable.style.display = "none";
+        ageCombTable.style.display = "none";
+
+        if (selectedTable === "user_uploads") {
+            uploadsTable.style.display = "block";
+        } else if (selectedTable === "login_comb") {
+            loginCombTable.style.display = "block";
+        } else if (selectedTable === "age_comb") {
+            ageCombTable.style.display = "block";
+        }
+        
+    }
+</script>
+
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>Verify Content</h2>
+
+        <div class="form-group">
+            <label for="table-select">Select Table:</label>
+            <select id="table-select" onchange="toggleTable()">
+                <option value="user_uploads">User Uploads</option>
+                <option value="login_comb">Login Comb</option>
+                <option value="age_comb">Age Comb</option>
+            </select>
+        </div>
+
+        <!-- User Uploads Table -->
+        {% if uploads %}
+        <table id="uploads-table">
+            <thead>
+                <tr>
+                    {% for column in uploads[0].keys() %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for upload in uploads %}
+                <tr>
+                    {% for value in upload.values() %}
+                    <td>{{ value }}</td>
+                    {% endfor %}
+                    <td>
+                        <form action="/view_file" method="POST">
+                            <input type="hidden" name="unique_id" value="{{ upload['unique_id'] }}">
+                            <button type="submit">View File</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p id="uploads-table">No data uploaded yet.</p>
+        {% endif %}
+
+        <!-- Login Comb Table -->
+        {% if login_comb %}
+        <table id="login-comb-table" style="display: none;">
+            <thead>
+                <tr>
+                    {% for column in login_comb[0].keys() %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for login in login_comb %}
+                <tr>
+                    {% for value in login.values() %}
+                    <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p id="login-comb-table" style="display: none;">No data available yet..</p>
+        {% endif %}
+        
+        <!-- Age Comb Table -->
+        {% if age_comb %}
+        <table id="age-comb-table" style="display: none;">
+            <thead>
+                <tr>
+                    {% for column in age_comb[0].keys() %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for age in age_comb %}
+                <tr>
+                    {% for value in age.values() %}
+                    <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p id="age-comb-table" style="display: none;">No data available yet...</p>
+        {% endif %}
+    
+    <br>
+    </div>
+    
+</div>
+
+</body>
+</html>

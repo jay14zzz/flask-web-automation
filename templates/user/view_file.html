@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View File</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="main-content">
+        <h2>File Contents</h2>
+        <!-- Display the HTML table -->
+        {{ file_contents | safe }}
+
+        <!-- Back button -->
+        <br>
+        <div class="back-button">
+            <button onclick="goBack()">Back</button>
+        </div>
+        <br>
+
+    </div>
+</div>
+
+<script>
+    // Function to navigate back to the previous page
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dropdown</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ session.username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>Dropdown verification</h2>
+        <p>Placeholder text .............</p>
+        
+        <form id="dropdown-check-form">
+            <div class="form-group">
+                <label for="url">URL:</label>
+                <input type="url" id="url" name="url" placeholder="URL" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="id1">Dropdown 1:</label>
+                <input type="text" id="id1" name="id1" placeholder="dropdown 1 id" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="id2">Dropdown 2:</label>
+                <input type="text" id="id2" name="id2" placeholder="dropdown 2 id" required><br><br>
+            </div>
+            
+            <button type="submit" id="dropdown-check-button">Get Dropdown List</button>
+            <br><br>
+            <button id="toggle-button" type="button" onclick="toggleResultDivs()" style="display: none;">Display comma separated option2 table</button>
+            <br>
+            <div id="dropdown-check-result"></div>
+            <div id="dropdown-check-result2" style="display: none;"></div> <!-- Start with dropdown-check-result2 / resultDiv2 hidden -->
+            <br><br>
+        </form>
+        
+    </div>
+</div>
+
+<script>
+    document.getElementById('dropdown-check-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const url = document.getElementById("url").value;
+        const id1 = document.getElementById("id1").value;
+        const id2 = document.getElementById("id2").value;
+        const resultDiv = document.getElementById('dropdown-check-result');
+        const resultDiv2 = document.getElementById('dropdown-check-result2');
+        const toggleButton = document.getElementById('toggle-button');
+        
+        toggleButton.style.display = 'none';
+        toggleButton.textContent = 'Display comma separated option2 table';
+        resultDiv.style.display = 'block';
+        resultDiv2.style.display = 'none';
+        
+        resultDiv.innerHTML = '<p style="color: blue;">Waiting for response from server...</p>';
+        
+        fetch(`/run_dropdown2_check?url=${encodeURIComponent(url)}&id1=${encodeURIComponent(id1)}&id2=${encodeURIComponent(id2)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response data:', data); // Log the response data
+                if (data.status === 'success') {
+                    const dropdownOptions1 = data.options1;
+                    const dropdownOptions2 = data.options2;
+
+                    console.log('dropdownOptions1:', dropdownOptions1); // Log the dropdownOptions1
+                    console.log('dropdownOptions2:', dropdownOptions2); // Log the dropdownOptions2
+                    
+                    toggleButton.style.display = 'block';
+
+                    // Create HTML for the table in resultDiv
+                    let tableHtml = '<table style="border-collapse: collapse; width: 100%;">';
+                    tableHtml += '<tr><th style="border: 1px solid black; padding: 8px;">Option 1</th><th style="border: 1px solid black; padding: 8px;">Option 2</th></tr>';
+
+                    for (let i = 0; i < dropdownOptions1.length; i++) {
+                        const option1 = dropdownOptions1[i];
+                        const option2List = dropdownOptions2[i];
+
+                        // First row for the current option1
+                        tableHtml += `<tr><td style="border: 1px solid black; padding: 8px;" rowspan="${option2List.length}">${option1}</td>`;
+                        tableHtml += `<td style="border: 1px solid black; padding: 8px;">${option2List[0]}</td></tr>`;
+
+                        // Remaining rows for the current option1
+                        for (let j = 1; j < option2List.length; j++) {
+                            tableHtml += `<tr><td style="border: 1px solid black; padding: 8px;">${option2List[j]}</td></tr>`;
+                        }
+                    }
+
+                tableHtml += '</table>';
+                resultDiv.innerHTML = tableHtml;
+
+                // Create HTML for the comma-separated list in resultDiv2
+                let commaSeparatedHtml = '<table style="border-collapse: collapse; width: 100%;">';
+                commaSeparatedHtml += '<tr><th style="border: 1px solid black; padding: 8px;">Option 1</th><th style="border: 1px solid black; padding: 8px;">Option 2</th></tr>';
+
+                for (let i = 0; i < dropdownOptions1.length; i++) {
+                    const option1 = dropdownOptions1[i];
+                    const option2List = dropdownOptions2[i];
+                    const option2String = option2List.join(', ');  // Convert the option2 list to a comma-separated string
+
+                    commaSeparatedHtml += `<tr><td style="border: 1px solid black; padding: 8px;">${option1}</td><td style="border: 1px solid black; padding: 8px;">${option2String}</td></tr>`;
+                }
+
+                commaSeparatedHtml += '</table>';
+                resultDiv2.innerHTML = commaSeparatedHtml;  // Update resultDiv2 with the comma-separated table
+
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+    });
+
+    function toggleResultDivs() {
+        const resultDiv = document.getElementById('dropdown-check-result');
+        const resultDiv2 = document.getElementById('dropdown-check-result2');
+        const toggleButton = document.getElementById('toggle-button');
+
+        if (toggleButton.textContent === 'Display comma separated option2 table') {
+            resultDiv.style.display = 'none';
+            resultDiv2.style.display = 'block';
+            toggleButton.textContent = 'Display Default table';
+        } else {
+            resultDiv.style.display = 'block';
+            resultDiv2.style.display = 'none';
+            toggleButton.textContent = 'Display comma separated option2 table';
+        }
+    }
+
+
+    
+</script>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Login</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ session.username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>Login check verification</h2>
+        <p>Placeholder text .............</p>
+        
+        <form id="verify-login-form">
+        <!-- <form id="verify-login-form" action="/verify_login_check" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()"> -->
+            <div class="form-group">
+                <label for="url">URL:</label>
+                <input type="url" id="url" name="url" placeholder="URL" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="identifier">Identifier:</label>
+                <input type="text" id="identifier" name="identifier" placeholder="Identifier" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="file">File:</label>
+                <input type="file" id="file" name="file" accept=".xlsx, .xls, .csv" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="login1">Login 1:</label>
+                <select id="login1" name="login1">
+                    <option value="select">Select an option</option>
+                    <!-- Dropdown options will be populated dynamically using JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="login2">Login 2:</label>
+                <select id="login2" name="login2">
+                    <option value="select">Select an option</option>
+                    <!-- Dropdown options will be populated dynamically using JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password1">Password 1:</label>
+                <select id="password1" name="password1">
+                    <option value="select">Select an option</option>
+                    <!-- Dropdown options will be populated dynamically using JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password2">Password 2:</label>
+                <select id="password2" name="password2">
+                    <option value="select">Select an option</option>
+                    <!-- Dropdown options will be populated dynamically using JavaScript -->
+                </select>
+            </div>
+
+            <!-- New DOB format radio buttons with default selection -->
+            <div class="form-group">
+                <label>Date of Birth Format:</label>
+                <input type="radio" id="dob_format_yy" name="dob_format" value="yy" checked>
+                <label for="dob_format_yy">YY</label>
+                <input type="radio" id="dob_format_yyyy" name="dob_format" value="yyyy">
+                <label for="dob_format_yyyy">YYYY</label><br>
+            </div>
+
+            <!-- New Number of Cases radio buttons with default selection -->
+            <div class="form-group">
+                <label>Number of Test Cases:</label>
+                <input type="radio" id="limited_cases" name="test_case_number" value="limited" checked>
+                <label for="limited_cases">Limited</label>
+                <input type="radio" id="full_cases" name="test_case_number" value="full">
+                <label for="full_cases">Full</label><br>
+            </div>
+
+            
+            <button type="submit" id="verify-login-button">Verify Login combination</button>
+            <div id="verify-login-result"></div>
+            <br><br>
+        </form>
+        
+    </div>
+</div>
+
+<script>
+    document.getElementById('file').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        resetDropdown("login1");
+        resetDropdown("login2");
+        resetDropdown("password1");
+        resetDropdown("password2");
+        if (!file) return;
+
+        const fileType = file.name.split('.').pop().toLowerCase();
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            let headers = [];
+
+            if (fileType === 'csv') {
+                const text = e.target.result;
+                const rows = text.split('\n');
+                if (rows.length > 0) {
+                    headers = rows[0].split(',');
+                }
+            } else if (fileType === 'xls' || fileType === 'xlsx') {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
+            }
+
+            // populateDropdown(headers);
+            // Populate the login, password dropdowns
+            populateDropdown("login1", headers);
+            populateDropdown("login2", headers);
+            populateDropdown("password1", headers);
+            populateDropdown("password2", headers);
+        };
+
+        if (fileType === 'csv') {
+            reader.readAsText(file);
+        } else if (fileType === 'xls' || fileType === 'xlsx') {
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    // function populateDropdown(headers) {
+    //     const dropdown = document.getElementById('columnDropdown');
+    //     dropdown.innerHTML = ''; // Clear existing options
+
+    //     headers.forEach(header => {
+    //         const option = document.createElement('option');
+    //         option.value = header;
+    //         option.text = header;
+    //         dropdown.appendChild(option);
+    //     });
+    // }
+
+    // function to populate any dropdown with ID and values
+    function populateDropdown(dropdownId, values) {
+        var dropdown = document.getElementById(dropdownId);
+        dropdown.innerHTML = "";
+
+        // Add default option
+        var defaultOption = document.createElement("option");
+        defaultOption.text = "Select an option";
+        defaultOption.value = "";
+        dropdown.add(defaultOption);
+
+        // Add options from the fetched data
+        values.forEach(value => {
+            var option = document.createElement("option");
+            option.text = value;
+            option.value = value;
+            dropdown.add(option);
+        });
+    }
+
+    // function to reset dropdown
+    function resetDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        dropdown.innerHTML = "";
+
+        // Add default option
+        var defaultOption = document.createElement("option");
+        defaultOption.text = "Select an option";
+        defaultOption.value = "";
+        dropdown.add(defaultOption);
+
+    }
+
+    // Function to validate form before submission (login-combination-form)
+    function validateForm() {
+        // Get selected values
+        var login1 = document.getElementById("login1").value;
+        var login2 = document.getElementById("login2").value;
+        var password1 = document.getElementById("password1").value;
+        var password2 = document.getElementById("password2").value;
+
+        // Check for duplicate values
+        if (login1 === login2 || login1 === password1 || login1 === password2 ||
+            login2 === password1 || password1 === password2) {
+            alert("Please select unique values for login and password fields.");
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+
+    function getSelectedRadioValue(name) {
+        // Get all radio buttons with the specified name
+        var radios = document.getElementsByName(name);
+        
+        // Loop through the radio buttons to find the one that's checked
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                // Return the value of the checked radio button
+                return radios[i].value;
+            }
+        }
+        
+        // Return null if no radio button is selected
+        return null;
+    }
+
+    // var selectedDOBFormat = getSelectedRadioValue('dob_format');
+    // var selectedTestCases = getSelectedRadioValue('test_case_number')
+
+    document.getElementById('verify-login-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Perform your form validation here
+        if (!validateForm()) {
+            return; // Exit early if validation fails
+        }
+        
+        const formData = new FormData();
+        formData.append('url', document.getElementById('url').value);
+        formData.append('identifier', document.getElementById('identifier').value);
+        formData.append('file', document.getElementById('file').files[0]);
+        formData.append('login1', document.getElementById('login1').value);
+        formData.append('login2', document.getElementById('login2').value);
+        formData.append('password1', document.getElementById('password1').value);
+        formData.append('password2', document.getElementById('password2').value);
+
+        formData.append('dob_format', getSelectedRadioValue('dob_format'));
+        formData.append('test_case_number', getSelectedRadioValue('test_case_number'));
+ 
+        // const form = document.getElementById('verify-login-form');
+        // const formData = new FormData(form);
+
+        // // Include the file in the FormData
+        // const fileInput = document.getElementById('file');
+        // if (fileInput.files.length > 0) {
+        //     formData.append('file', fileInput.files[0]);
+        // }
+
+        // Displaying a message before the fetch request OR while waiting for the response
+        const resultDiv = document.getElementById('verify-login-result');
+        resultDiv.innerHTML = '<p style="color: blue;">Waiting for response from server...</p>';
+
+
+        fetch('/verify_login_check', {
+            method: 'POST',
+            body: formData
+        })
+        // .then(response => response.json())
+        // .then(data => {
+        //     document.getElementById('verify-login-result').innerText = data.result;
+        // })
+        // .catch(error => {
+        //     console.error('Error:', error);
+        //     document.getElementById('verify-login-result').innerText = 'An error occurred';
+        // });
+        .then(response => response.json())
+        .then(data => {
+        // Updating the message based on the response
+        if (data.status === 'success') {
+            // Create a list to display each element on a new line
+            // const resultList = data.results.map(result => `<li>${result}</li>`).join('');
+            // resultDiv.innerHTML = `<ul style="color: green;">${resultList}</ul>`;
+            // commented to above code to check for fail string and change colour.
+
+            // code to change color if fail is present
+            // Create a list to display each element on a new line
+            const resultList = data.results.map(result => {
+                // Check if the result contains "fail", "failure", or "failed"
+                const color = /fail|failure|failed/i.test(result) ? 'red' : 'green';
+                return `<li style="color: ${color};">${result}</li>`;
+            }).join('');
+            resultDiv.innerHTML = `<ul>${resultList}</ul>`;
+            // END of code to change color if fail is present
+        } else {
+            resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+        }
+        })
+        .catch(error => {
+            // Display error message
+            resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        });
+
+
+    });
+
+
+</script>
+
+</body>
+</html>

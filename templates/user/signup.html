@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup</title>
+<!--  <link rel="stylesheet" href="styles.css">  -->
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<script>
+    function validateForm() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password != confirmPassword) {
+            alert("Passwords do not match");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Signup</h2>
+    <form action="/signup" method="POST" onsubmit="return validateForm()">
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="password" id="password" name="password" placeholder="Password" required><br><br>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required><br><br>
+        <input type="submit" value="Signup">
+    </form>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+    <p>Not sure about signing up, visit the home page and checkout the features <a href="{{ url_for('index') }}">Index page</a></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dropdown</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='home_styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="welcome">
+        <h1>Welcome, {{ session.username }}</h1>
+    </div>
+    <div class="logout">
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul class="options">
+            <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
+            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
+            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
+            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
+            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <h2>Dropdown verification</h2>
+        <p>Placeholder text .............</p>
+        
+        <form id="dropdown-check-form">
+            <div class="form-group">
+                <label for="url">URL:</label>
+                <input type="url" id="url" name="url" placeholder="URL" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="id">Identifier:</label>
+                <input type="text" id="id" name="id" placeholder="element id" required><br><br>
+            </div>
+            
+            <button type="submit" id="dropdown-check-button">Get Dropdown List</button>
+            <div id="dropdown-check-result"></div>
+            <br><br>
+        </form>
+        
+    </div>
+</div>
+
+<script>
+    document.getElementById('dropdown-check-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const url = document.getElementById("url").value;
+        const id = document.getElementById("id").value;
+        const resultDiv = document.getElementById('dropdown-check-result');
+        
+        resultDiv.innerHTML = '<p style="color: blue;">Waiting for response from server...</p>';
+        
+        fetch(`/run_dropdown_check?url=${encodeURIComponent(url)}&id=${encodeURIComponent(id)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const resultList = data.options.map(result => `<li>${result}</li>`).join('');
+                    resultDiv.innerHTML = `<ul style="color: green;">${resultList}</ul>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+    });
+</script>
+
+</body>
+</html>

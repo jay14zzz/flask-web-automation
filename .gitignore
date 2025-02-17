@@ -1,0 +1,27 @@
+# ignore virtual environment folder
+venv/
+
+# Ignore environment files
+.env
+
+# ignore IDE/editor configuration files
+.vscode/
+.idea/
+
+# ignore everything in user uploads directory
+uploads/*
+# except the uploads folder itself (to keep the folder in git)
+!uploads/
+
+# Ignore __pycache__ inside selenium_scripts
+selenium_scripts/__pycache__
+# globally ignore all __pycache__ folders
+**__pycache__
+
+# captcha img -- files starting with 'captcha_image*' will be ignored globally - by including / ('/captcha_image*')in front it will be ignored only in main folder
+/captcha_image*
+
+# ignore DB files
+admin_users.db
+users.db
+user_data.db
