@@ -200,8 +200,8 @@ def test_login_combinations(url, file_path, login_columns, password_columns, dob
     
                 # Initialize the Chrome WebDriver
                 chrome_options = Options()
-                # chrome_options.add_argument("--headless")
-                chrome_options.add_argument("--start-maximized")
+                chrome_options.add_argument("--headless")
+                # chrome_options.add_argument("--start-maximized")
                 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     
                 

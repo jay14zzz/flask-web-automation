@@ -14,8 +14,8 @@ def dropdown_check(url, element_id):
     dropdown_options = []
 
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--start-maximized")
     
     try:
         # Initialize the Chrome driver

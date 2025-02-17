@@ -11,8 +11,8 @@ def selenium_driver_check():
         # Define Chrome options
         chrome_options = Options()
         # Add arguments to Chrome options
-        chrome_options.add_argument("--start-maximized")  # Opens the browser window in fullscreen mode
-        # chrome_options.add_argument("--headless")  # Uncomment to run Chrome in headless mode (without opening the browser window)
+        # chrome_options.add_argument("--start-maximized")  # Opens the browser window in fullscreen mode
+        chrome_options.add_argument("--headless")  # Uncomment to run Chrome in headless mode (without opening the browser window)
 
         # Initialize the Chrome WebDriver with ChromeDriverManager
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
