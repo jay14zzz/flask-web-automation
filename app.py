@@ -544,16 +544,12 @@ def signup():
 def login():
 
     if request.method == 'GET':
-        if app.config['RESTRICT_SIGNUP'] == True:
-            return render_template('user/403.html'), 403
         return render_template('user/login.html')
 
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        if app.config['RESTRICT_SIGNUP'] == True:
-            return render_template('user/403.html'), 403
         
         user = validate_login(username, password)
         if user:
@@ -680,6 +676,8 @@ def admin_login():
 @app.route('/admin/signup', methods=['GET', 'POST'])
 def admin_signup():
     if request.method == 'POST':
+        if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
         username = request.form['username']
         password = request.form['password']
 
@@ -690,6 +688,9 @@ def admin_signup():
             return redirect('/admin/login')
         else:
             return "Username already exists. Please choose a different username."
+    
+    if app.config['RESTRICT_SIGNUP'] == True:
+            return render_template('user/403.html'), 403
         
     return render_template('admin/admin_signup.html')
 
