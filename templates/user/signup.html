@@ -11,6 +11,13 @@
     function validateForm() {
         var password = document.getElementById("password").value;
         var confirmPassword = document.getElementById("confirmPassword").value;
+        var username = document.getElementById("username").value.trim();  // Trim spaces
+
+        // Check if the username is empty or contains only spaces
+        if (username === "") {
+            alert("Username cannot be empty or just spaces.");
+            return false;
+        }
 
         if (password != confirmPassword) {
             alert("Passwords do not match");
@@ -26,7 +33,7 @@
 <div class="container">
     <h2>Signup</h2>
     <form action="/signup" method="POST" onsubmit="return validateForm()">
-        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="text" name="username" placeholder="Username" required pattern="\S+" required title="Username cannot be empty or contain spaces"><br><br>
         <input type="password" id="password" name="password" placeholder="Password" required><br><br>
         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required><br><br>
         <input type="submit" value="Signup">
