@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for
+from flask import Flask, render_template, request, redirect, session, flash, url_for, abort
 import sqlite3
 from sqlite3 import IntegrityError
 
@@ -14,8 +14,8 @@ from flask import jsonify
 from selenium_scripts.seleniumDriverCheck import selenium_driver_check
 # from selenium_scripts.loginCheck import test_login_combinations
 from selenium_scripts.loginCheckV2 import test_login_combinations
-from selenium_scripts.dropdownCheck import dropdown_check
-from selenium_scripts.dropdown2Check import dropdown2_check
+from selenium_scripts.dropdown1 import dropdown1_check
+from selenium_scripts.dropdown1_1 import dropdown1_1_check
 
 # from loginCheck import test_login_combinations
 
@@ -609,18 +609,18 @@ def execute():
         return redirect('/login')
     
 # Route for dropdown verification page
-@app.route('/dropdown')
+@app.route('/dropdown1')
 def dropdown():
     if 'username' in session:
-        return render_template('user/dropdown.html', username=session['username'], active='')
+        return render_template('user/dropdown1.html', username=session['username'], active='dropdown1')
     else:
         return redirect('/login')
     
 # Route for dropdown verification page
-@app.route('/dropdown2')
+@app.route('/dropdown1-1')
 def dropdown2():
     if 'username' in session:
-        return render_template('user/dropdown2.html', username=session['username'], active='')
+        return render_template('user/dropdown1-1.html', username=session['username'], active='dropdown1-1')
     else:
         return redirect('/login')
 
@@ -628,7 +628,7 @@ def dropdown2():
 @app.route('/verifylogin')
 def verifylogin():
     if 'username' in session:
-        return render_template('user/verifylogin.html', username=session['username'], active='')
+        return render_template('user/verifylogin.html', username=session['username'], active='verifylogin')
     else:
         return redirect('/login')
 
@@ -753,19 +753,19 @@ def run_dropdown():
     if 'username' in session:
         url = request.args.get('url')
         id = request.args.get('id')
-        result = dropdown_check(url,id)
+        result = dropdown1_check(url,id)
         return jsonify(result), 200 if result["status"] == "success" else 500
     else:
         return redirect('/login')  # Redirect to login page if user is not logged in
     
 # Route for dropdown check
-@app.route('/run_dropdown2_check')
-def run_dropdown2():
+@app.route('/run_dropdown1_1_check')
+def run_dropdown1_1():
     if 'username' in session:
         url = request.args.get('url')
         id1 = request.args.get('id1')
         id2 = request.args.get('id2')
-        result = dropdown2_check(url,id1,id2)
+        result = dropdown1_1_check(url,id1,id2)
         return jsonify(result), 200 if result["status"] == "success" else 500
     else:
         return redirect('/login')  # Redirect to login page if user is not logged in

@@ -8,7 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 import time
 
-def dropdown_check(url, element_id):
+def dropdown1_check(url, element_id):
     status = "success"
     message = ""
     dropdown_options = []

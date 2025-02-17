@@ -24,10 +24,8 @@
         <h2>Menu</h2>
         <ul class="options">
             <li {% if active == 'home' %}class="active"{% endif %}><a href="/home">Home</a></li>
-            <li {% if active == 'upload' %}class="active"{% endif %}><a href="/upload">Upload</a></li>
-            <li {% if active == 'verify' %}class="active"{% endif %}><a href="/verify">Verify</a></li>
-            <li {% if active == 'test_run' %}class="active"{% endif %}><a href="/test_run">Test Run</a></li>
-            <li {% if active == 'execute' %}class="active"{% endif %}><a href="/execute">Execute</a></li>
+            <li {% if active == 'dropdown1-1' %}class="active"{% endif %}><a href="/dropdown1-1">Dropdown 1-1</a></li>
+
         </ul>
     </div>
     
@@ -79,7 +77,7 @@
         
         resultDiv.innerHTML = '<p style="color: blue;">Waiting for response from server...</p>';
         
-        fetch(`/run_dropdown2_check?url=${encodeURIComponent(url)}&id1=${encodeURIComponent(id1)}&id2=${encodeURIComponent(id2)}`)
+        fetch(`/run_dropdown1_1_check?url=${encodeURIComponent(url)}&id1=${encodeURIComponent(id1)}&id2=${encodeURIComponent(id2)}`)
             .then(response => response.json())
             .then(data => {
                 console.log('Response data:', data); // Log the response data
