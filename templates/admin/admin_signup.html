@@ -5,14 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Signup</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<script>
+    function validateForm() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var username = document.getElementById("username").value.trim();  // Trim spaces
+
+        // Check if the username is empty or contains only spaces
+        if (username === "") {
+            alert("Username cannot be empty or just spaces.");
+            return false;
+        }
+
+        if (password != confirmPassword) {
+            alert("Passwords do not match");
+            return false;
+        }
+        return true;
+    }
+</script>
+
 </head>
 <body>
 
 <div class="container">
     <h2>Admin Signup</h2>
-    <form action="/admin/signup" method="POST">
-        <input type="text" name="username" placeholder="Username" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><br><br>
+    <form action="/admin/signup" method="POST" onsubmit="return validateForm()">
+        <input type="text" name="username" placeholder="Username" pattern="\S+" maxlength="20" required title="Username cannot be empty or contain spaces"><br><br>
+        <input type="password" name="password" placeholder="Password" pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" required title="Password must contain at least one letter, one number, and be at least 8 characters long"><br><br>
         <input type="password" name="confirm_password" placeholder="Confirm Password" required><br><br>
         <input type="submit" value="Sign Up">
     </form>
