@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 
@@ -24,11 +24,20 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 # Load configuration from config.py
-app.config.from_pyfile('config.py')
+# app.config.from_pyfile('config.py')
 # Access configuration values
 # print(app.config['SECRET_KEY'])
 
+########################### Config Selection #############
+# For development environment
+app.config.from_object('config.DevelopmentConfig')
+
+# For production environment
+# app.config.from_object('config.ProductionConfig')
+
 app.secret_key = app.config['SECRET_KEY']
+
+
 
 # Configuration to remove trailing slashes
 app.url_map.strict_slashes = False
@@ -1025,5 +1034,5 @@ if __name__ == '__main__':
 
     # print(app.url_map) # Prints a detailed list of URL rules (routes) registered in the application, useful for debugging and understanding the application's routing configuration.
 
-    app.run(debug=True)
+    app.run(debug=app.config['DEBUG'])
 
