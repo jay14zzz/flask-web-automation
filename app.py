@@ -37,6 +37,8 @@ app.config.from_object('config.DevelopmentConfig')
 
 app.secret_key = app.config['SECRET_KEY']
 
+# Set the session timeout based on the selected config (which is set in ProductionConfig or DevelopmentConfig)
+app.permanent_session_lifetime = timedelta(seconds=app.config['PERMANENT_SESSION_LIFETIME'])
 
 
 # Configuration to remove trailing slashes
@@ -568,6 +570,7 @@ def login():
         
         user = validate_login(username, password)
         if user:
+            session.permanent = True  # Enable permanent session to use the session timeout
             session['username'] = username
             return redirect('/home')
         else:
@@ -688,6 +691,7 @@ def admin_login():
         password = request.form['password']
         admin_user = validate_admin_login(username, password)
         if admin_user:
+            session.permanent = True  # Enable permanent session to use the session timeout
             session['admin_username'] = username
             return redirect('/admin/dashboard')
         else:
