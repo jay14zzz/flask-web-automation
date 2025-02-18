@@ -547,6 +547,12 @@ def login():
         return render_template('user/login.html')
 
     if request.method == 'POST':
+
+        # Clear any previous session data ( login) when logging in as user
+        session.pop('admin_username', None)  # Remove admin session data
+        session.pop('username', None)  # Remove user session if present
+
+
         username = request.form['username']
         password = request.form['password']
 
@@ -571,8 +577,10 @@ def login():
 
 # Route for logout
 @app.route('/logout', methods=['POST'])
+@app.route('/admin/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
+    session.pop('admin_username', None)
     return redirect('/login')
 
 @app.route('/upload')
@@ -662,6 +670,11 @@ def verifylogin():
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
+
+        # Clear any previous session data ( login) when logging in as admin
+        session.pop('username', None)  # Remove user session if present
+        session.pop('admin_username', None)  # Remove admin session data
+
         username = request.form['username']
         password = request.form['password']
         admin_user = validate_admin_login(username, password)
