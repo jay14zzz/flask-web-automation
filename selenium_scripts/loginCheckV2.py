@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import pandas as pd
 import requests
-import easyocr
+# import easyocr
 import traceback
 from datetime import datetime
 import uuid

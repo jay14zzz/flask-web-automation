@@ -10,7 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
 import requests
-import easyocr
+# import easyocr
 import traceback
 from datetime import datetime
 import uuid
@@ -40,31 +40,31 @@ def perform_login_test(driver, url, login_value, pass_value):
         # Captcha handling
         flag = 0
         cap_ctr = 1
-        while flag == 0:
-            captcha_input = driver.find_element(By.NAME, "txtCode")
-            img_element = driver.find_element(By.ID, "image")
-            image_url = img_element.get_attribute("src")
-            # Generate a unique filename using UUID
-            image_filename = f'captcha_image_{uuid.uuid4()}.jpg'
-            response = requests.get(image_url)
-            with open(image_filename, 'wb') as f:
-                f.write(response.content)
-            reader = easyocr.Reader(['en'], gpu=False)
-            results = reader.readtext(image_filename)
-            detected_text = results[0][1].lower().replace(" ", "")
-            captcha_input.send_keys(detected_text)
-            os.remove(image_filename)
-            driver.find_element(By.TAG_NAME, 'h4').click()
-            time.sleep(1)
-            
-            error_label = driver.find_element(By.CLASS_NAME, "error")
-            if error_label.is_displayed():
-                flag = 0
-                driver.find_element(By.LINK_TEXT, "here").click()
-                cap_ctr += 1
-                time.sleep(3)
-            else:
-                flag = 1
+        # while flag == 0:
+        #     captcha_input = driver.find_element(By.NAME, "txtCode")
+        #     img_element = driver.find_element(By.ID, "image")
+        #     image_url = img_element.get_attribute("src")
+        #     # Generate a unique filename using UUID
+        #     image_filename = f'captcha_image_{uuid.uuid4()}.jpg'
+        #     response = requests.get(image_url)
+        #     with open(image_filename, 'wb') as f:
+        #         f.write(response.content)
+        #     reader = easyocr.Reader(['en'], gpu=False)
+        #     results = reader.readtext(image_filename)
+        #     detected_text = results[0][1].lower().replace(" ", "")
+        #     captcha_input.send_keys(detected_text)
+        #     os.remove(image_filename)
+        #     driver.find_element(By.TAG_NAME, 'h4').click()
+        #     time.sleep(1)
+        #
+        #     error_label = driver.find_element(By.CLASS_NAME, "error")
+        #     if error_label.is_displayed():
+        #         flag = 0
+        #         driver.find_element(By.LINK_TEXT, "here").click()
+        #         cap_ctr += 1
+        #         time.sleep(3)
+        #     else:
+        #         flag = 1
 
         login_btn = driver.find_element(By.XPATH, "//input[@value='Login' and @class='btn blue_button5 right']")
         login_btn.click()
