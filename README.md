@@ -17,7 +17,7 @@ The tool is designed to run Selenium tests on the server side, enabling multiple
 ## Usage
 
 1. Clone the repository
-2. Install required dependencies (`Flask`, `Selenium`, etc.)
+2. Install required dependencies from requirements.txt (`Flask`, `Selenium`, etc.)
 3. Run the Flask app (app.py)
 4. Access the web interface, enter the URL and locator values
 5. Submit to run Selenium verification and view results
